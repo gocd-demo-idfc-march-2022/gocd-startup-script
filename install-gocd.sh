@@ -26,8 +26,8 @@ echo "Stopping existing containers..."
 docker container rm -f $GOCD_SERVER_NAME
 docker container rm -f $GOCD_JAVA_13_AGENT
 docker container rm -f $GOCD_JAVA_15_AGENT
+docker container rm -f $GOCD_NODEJS_AGENT
 echo "Done..."
-
 
 
 export GOCD_GODATA_FOLDER="/Users/$(whoami)/.gocd/godata"
@@ -35,7 +35,13 @@ rm -rf $GOCD_GODATA_FOLDER
 mkdir -p $GOCD_GODATA_FOLDER
 
 echo "Starting $GOCD_SERVER_NAME container..."
-docker container run -v $GOCD_GODATA_FOLDER:/godata -d -p8153:8153 --name  $GOCD_SERVER_NAME gocd/gocd-server:v21.4.0
+docker container run \
+  -v $GOCD_GODATA_FOLDER:/godata \
+  -d -p8153:8153 \
+  -e GOCD_PLUGIN_INSTALL_docker-elastic-agents=https://github.com/gocd-contrib/docker-elastic-agents-plugin/releases/download/v3.0.0-245/docker-elastic-agents-3.0.0-245.jar \
+  --name $GOCD_SERVER_NAME \
+  gocd/gocd-server:v21.4.0
+
 
 API_RESPONSE=0
 while [ $API_RESPONSE -ne 200 ]
@@ -47,17 +53,22 @@ done
 echo "GoCD Server Started..."
 
 
-
-
 echo "Locating Agent Auto Register Key"
 AGENT_AUTO_REGISTER_KEY=$(echo 'cat //cruise/server/@agentAutoRegisterKey' | xmllint --shell $GOCD_GODATA_FOLDER/config/cruise-config.xml  | grep -v ">" | cut -f 2 -d "=" | tr -d \")
 echo "AGENT_AUTO_REGISTER_KEY is $AGENT_AUTO_REGISTER_KEY"
 
 
-
 echo "Starting $GOCD_JAVA_13_AGENT container..."
-#docker run --name $GOCD_JAVA_13_AGENT -d -e AGENT_AUTO_REGISTER_KEY=$AGENT_AUTO_REGISTER_KEY -e AGENT_AUTO_REGISTER_RESOURCES="java,jdk13" -e AGENT_AUTO_REGISTER_HOSTNAME=$GOCD_JAVA_13_AGENT -e GO_SERVER_URL=http://$(docker inspect --format='{{(index (index .NetworkSettings.IPAddress))}}' $GOCD_SERVER_NAME):8153/go $GOCD_JAVA_13_DOCKER_IMAGE
+docker run --name $GOCD_JAVA_13_AGENT -d -e AGENT_AUTO_REGISTER_KEY=$AGENT_AUTO_REGISTER_KEY -e AGENT_AUTO_REGISTER_RESOURCES="java,jdk13" -e AGENT_AUTO_REGISTER_HOSTNAME=$GOCD_JAVA_13_AGENT -e GO_SERVER_URL=http://$(docker inspect --format='{{(index (index .NetworkSettings.IPAddress))}}' $GOCD_SERVER_NAME):8153/go $GOCD_JAVA_13_DOCKER_IMAGE
 
 
 echo "Starting $GOCD_JAVA_15_AGENT container..."
 docker run --name $GOCD_JAVA_15_AGENT -d -e AGENT_AUTO_REGISTER_KEY=$AGENT_AUTO_REGISTER_KEY -e AGENT_AUTO_REGISTER_RESOURCES="java,jdk15" -e AGENT_AUTO_REGISTER_HOSTNAME=$GOCD_JAVA_15_AGENT -e GO_SERVER_URL=http://$(docker inspect --format='{{(index (index .NetworkSettings.IPAddress))}}' $GOCD_SERVER_NAME):8153/go $GOCD_JAVA_15_DOCKER_IMAGE
+
+
+echo "Starting $GOCD_NODEJS_AGENT container..."
+docker run --name $GOCD_NODEJS_AGENT -d -e AGENT_AUTO_REGISTER_KEY=$AGENT_AUTO_REGISTER_KEY -e AGENT_AUTO_REGISTER_RESOURCES="nodejs" -e AGENT_AUTO_REGISTER_HOSTNAME=$GOCD_NODEJS_AGENT -e GO_SERVER_URL=http://$(docker inspect --format='{{(index (index .NetworkSettings.IPAddress))}}' $GOCD_SERVER_NAME):8153/go $GOCD_NODEJS_DOCKER_IMAGE
+
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "~~~~~~~~~~~~~~~~~~~~ GoCD Setup Completed ~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

@@ -42,7 +42,7 @@ docker container run \
   --name $GOCD_SERVER_NAME \
   gocd/gocd-server:v21.4.0
 
-sleep 20
+sleep 50
 
 API_RESPONSE=0
 while [ $API_RESPONSE -ne 200 ]

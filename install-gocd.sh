@@ -12,9 +12,9 @@ export GOCD_JAVA_15_AGENT=idfc_gocd_agent_java_15
 export GOCD_NODEJS_AGENT=idfc_gocd_agent_nodejs
 
 export GOCD_SERVER_IMAGE=gocd/gocd-server:v21.4.0
-export GOCD_JAVA_13_DOCKER_IMAGE=gocd/gocd-agent-alpine-3.8:v20.3.0
+export GOCD_JAVA_13_DOCKER_IMAGE=ganeshpl/gocd-agent-alpine-3.15-java-13:v20.4.0
 export GOCD_JAVA_15_DOCKER_IMAGE=ganeshpl/gocd-agent-alpine-3.15-java-15:v20.4.0
-export GOCD_NODEJS_DOCKER_IMAGE=gocd/gocd-agent-alpine-3.12:v21.4.0
+export GOCD_NODEJS_DOCKER_IMAGE=ganeshpl/gocd-agent-alpine-3.15-nodejs:v20.4.0
 
 echo "Start pulling required docker images..."
 docker image pull $GOCD_SERVER_IMAGE

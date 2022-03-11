@@ -56,7 +56,14 @@ do
      echo "Waiting for external plugins to be downloaded..."
 done
 echo "Downloaded external plugins..."
+
 sleep 20
+
+RUNNING_CONTAINERS=$(docker ps | wc -l)
+if [ "$RUNNING_CONTAINERS" -eq "1" ]; then
+    echo "GoCD Server Container not Running. Please Rerun the script!!"
+    exit 1;
+fi
 
 API_RESPONSE=0
 while [ $API_RESPONSE -ne 200 ]

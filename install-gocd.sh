@@ -17,7 +17,7 @@ export GOCD_JAVA_15_DOCKER_IMAGE=ganeshpl/gocd-agent-alpine-3.15-java-15:v20.4.0
 export GOCD_NODEJS_DOCKER_IMAGE=ganeshpl/gocd-agent-alpine-3.15-nodejs:v20.4.0
 
 echo "Start pulling required docker images..."
-#docker image pull $GOCD_SERVER_IMAGE
+docker image pull $GOCD_SERVER_IMAGE
 docker image pull $GOCD_JAVA_13_DOCKER_IMAGE
 docker image pull $GOCD_JAVA_15_DOCKER_IMAGE
 docker image pull $GOCD_NODEJS_DOCKER_IMAGE
@@ -34,6 +34,7 @@ echo "Done..."
 export GOCD_GODATA_FOLDER="/Users/$(whoami)/.gocd/godata"
 rm -rf "$GOCD_GODATA_FOLDER"
 mkdir -p "$GOCD_GODATA_FOLDER"
+mkdir -p "$GOCD_GODATA_FOLDER/config"
 mkdir -p "$GOCD_GODATA_FOLDER/plugins/external"
 
 echo "Starting $GOCD_SERVER_NAME container..."

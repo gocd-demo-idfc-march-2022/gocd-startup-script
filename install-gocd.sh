@@ -61,8 +61,8 @@ API_RESPONSE=0
 while [ $API_RESPONSE -ne 200 ]
 do
   echo "Waiting for GoCD Server to Start..."
-  sleep 5
-  API_RESPONSE=$(curl --write-out '%{http_code}' 'http://localhost:8153/go/api/v1/health')
+  sleep 10
+  API_RESPONSE=$(curl --write-out '%{http_code}' --silent --output /dev/null 'http://localhost:8153/go/api/v1/health')
 done
 echo "GoCD Server Started..."
 
